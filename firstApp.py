@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QKeyEvent
-from PyQt5.QtWidgets import QListWidgetItem, QFrame, QHBoxLayout, QAction
+from PyQt5.QtWidgets import QListWidgetItem, QFrame, QHBoxLayout, QAction, QTextEdit
 from gui import *
 from responsewidget import*
 from PyQt5 import QtWidgets
@@ -278,18 +278,13 @@ class FirstApp(Ui_MainWindow):
                 + 'Try out the Twitter Sentiment Analysis by adding some text above and pressing the tweet button!' + '</span></p></body></html>')
         self.tweetButton.setEnabled(True)
         self.tweetButton.clicked.connect(lambda:self.buttonClick())
-    #     self.textEdit.keyPressEvent(QKeyEvent)
-    #     self.textEdit.document().isEmpty()
-    #
-    # def keyPressEvent(self, event):
-    #     self.checkstatus()
-    #     print('gothere')
-    #
-    # def checkstatus(self):
-    #     if self.textEdit.text() == "":
-    #         self.tweetButton.setEnabled(False)
-    #     else:
-    #         self.tweetButton.setEnabled(True)
+        self.textEdit.textChanged.connect(lambda:self.checkstatus())
+
+    def checkstatus(self):
+        if self.textEdit.toPlainText() == "":
+            self.tweetButton.setEnabled(False)
+        else:
+            self.tweetButton.setEnabled(True)
 
     def buttonClick(self):
         inputedText = self.textEdit.toPlainText()
