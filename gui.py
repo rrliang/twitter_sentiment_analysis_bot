@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(619, 448)
+        MainWindow.resize(683, 769)
         MainWindow.setStyleSheet("background-color:rgb(21,32,43);\n"
 "")
         MainWindow.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
@@ -26,13 +26,15 @@ class Ui_MainWindow(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName("verticalLayout")
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
+        self.scrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 599, 387))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 665, 710))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.tweetButton = QtWidgets.QPushButton(self.scrollAreaWidgetContents_3)
-        self.tweetButton.setGeometry(QtCore.QRect(500, 170, 81, 41))
+        self.tweetButton.setEnabled(False)
+        self.tweetButton.setGeometry(QtCore.QRect(550, 150, 81, 41))
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(-1)
@@ -57,10 +59,14 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "background-color:rgb(23,124,192);\n"
 "}\n"
-"")
+"\n"
+"QPushButton:disabled {\n"
+"background-color:rgb(25,93,142);\n"
+"color:rgb(138,143,149);\n"
+"}")
         self.tweetButton.setObjectName("tweetButton")
         self.textEdit = QtWidgets.QTextEdit(self.scrollAreaWidgetContents_3)
-        self.textEdit.setGeometry(QtCore.QRect(80, 15, 504, 131))
+        self.textEdit.setGeometry(QtCore.QRect(130, 15, 481, 131))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -78,46 +84,63 @@ class Ui_MainWindow(object):
 "white-space: pre-wrap;\n"
 "min-height: 24px;\n"
 "max-height: 720px;")
+        self.textEdit.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.textEdit.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.textEdit.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.textEdit.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.textEdit.setObjectName("textEdit")
-        self.label = QtWidgets.QLabel(self.scrollAreaWidgetContents_3)
-        self.label.setGeometry(QtCore.QRect(10, 20, 61, 61))
+        self.listWidget = QtWidgets.QListWidget(self.scrollAreaWidgetContents_3)
+        self.listWidget.setGeometry(QtCore.QRect(50, 200, 611, 511))
+        self.listWidget.setStyleSheet("QScrollBar:vertical {              \n"
+"            border: none;\n"
+"            background: rgb(25, 39, 52);\n"
+"            width:15px;\n"
+"}\n"
+"QScrollBar::handle:vertical {\n"
+"            background: rgb(107, 125, 140);\n"
+"            min-height: 20px;\n"
+"}\n"
+"QScrollBar::add-line:vertical {\n"
+"            background: rgb(25, 39, 52);\n"
+"            height: 20px;\n"
+"            subcontrol-position: bottom;\n"
+"            subcontrol-origin: margin;\n"
+"}\n"
+"QScrollBar::sub-line:vertical {\n"
+"            background: rgb(25, 39, 52);\n"
+"            height: 20px;\n"
+"            subcontrol-position: top;\n"
+"            subcontrol-origin: margin;\n"
+"}\n"
+"QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {\n"
+"    background: none;\n"
+"}")
+        self.listWidget.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.listWidget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.listWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.listWidget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        self.listWidget.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.listWidget.setObjectName("listWidget")
+        self.frame = QtWidgets.QFrame(self.scrollAreaWidgetContents_3)
+        self.frame.setGeometry(QtCore.QRect(50, 10, 591, 191))
+        self.frame.setStyleSheet("border: 1px solid rgb(56,68,77);")
+        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame.setObjectName("frame")
+        self.label = QtWidgets.QLabel(self.frame)
+        self.label.setGeometry(QtCore.QRect(10, 10, 61, 61))
         self.label.setStyleSheet("background-color:rgb(21,32,43);\n"
-"")
+"border:none;")
         self.label.setObjectName("label")
-        self.label_3 = QtWidgets.QLabel(self.scrollAreaWidgetContents_3)
-        self.label_3.setGeometry(QtCore.QRect(10, 230, 61, 61))
-        self.label_3.setStyleSheet("background-color:rgb(21,32,43);\n"
-"")
-        self.label_3.setObjectName("label_3")
-        self.textBrowser = QtWidgets.QTextBrowser(self.scrollAreaWidgetContents_3)
-        self.textBrowser.setGeometry(QtCore.QRect(80, 220, 501, 141))
-        font = QtGui.QFont()
-        font.setFamily("Segoe UI")
-        font.setPointSize(-1)
-        self.textBrowser.setFont(font)
-        self.textBrowser.setStyleSheet("color:white;\n"
-"font-size:20px;\n"
-"overflow: hidden;\n"
-"padding: 12px;\n"
-"position: relative;\n"
-"white-space: pre-wrap;\n"
-"min-height: 24px;\n"
-"max-height: 720px;")
-        self.textBrowser.setPlaceholderText("")
-        self.textBrowser.setObjectName("textBrowser")
+        self.listWidget.raise_()
+        self.frame.raise_()
         self.textEdit.raise_()
         self.tweetButton.raise_()
-        self.label.raise_()
-        self.label_3.raise_()
-        self.textBrowser.raise_()
         self.scrollArea.setWidget(self.scrollAreaWidgetContents_3)
         self.verticalLayout.addWidget(self.scrollArea)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 619, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 683, 21))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -133,11 +156,5 @@ class Ui_MainWindow(object):
         self.tweetButton.setText(_translate("MainWindow", "Tweet"))
         self.textEdit.setPlaceholderText(_translate("MainWindow", "What\'s happening?"))
         self.label.setText(_translate("MainWindow", "<html><head/><body><p><img src=\"C:/Users/Rachel Liang/Documents/pyQtExperimentation/Resources/twitterpfp.ico\"/></p></body></html>"))
-        self.label_3.setText(_translate("MainWindow", "<html><head/><body><p><img src=\"C:/Users/Rachel Liang/Documents/pyQtExperimentation/Resources/drislampfp.ico\"/></p></body></html>"))
-        self.textBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Segoe UI\'; font-size:20px; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:20px; color:#ffffff;\">Shiekh Islam</span><span style=\" font-size:20px;\"> </span><img src=\"C:/Users/Rachel Liang/Documents/pyQtExperimentation/Resources/verifiedtwitter.ico\" /><span style=\" font-size:20px;\"> </span><span style=\" font-size:20px; color:#8899a6;\">@SsHIs </span><span style=\" font-size:20px;\"> </span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:20px; color:#ffffff;\">Try out the Twitter Sentiment Analysis by adding some text above and pressing the tweet button!</span></p></body></html>"))
 import twitter_rc
+
