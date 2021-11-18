@@ -16,6 +16,7 @@ To make a qrc to a py file,
 pyrcc5 twitter.qrc -o twitter.py
 
 ```bash
+twitter_sentiment_analysis_bot
 ├───Preprocess and train
 │   └───preprocessingandtraining.py
 │       ├───Inputs:
