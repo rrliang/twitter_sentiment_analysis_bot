@@ -155,6 +155,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Twitter Sentiment Analysis"))
         self.tweetButton.setText(_translate("MainWindow", "Tweet"))
         self.textEdit.setPlaceholderText(_translate("MainWindow", "What\'s happening?"))
-        self.label.setText(_translate("MainWindow", "<html><head/><body><p><img src=\"C:/Users/Rachel Liang/Documents/pyQtExperimentation/Resources/twitterpfp.ico\"/></p></body></html>"))
+        self.label.setText(_translate("MainWindow", "<html><head/><body><p><img src=\"Resources/twitterpfp.ico\"/></p></body></html>"))
 import twitter_rc
 

@@ -57,6 +57,6 @@ class Ui_ResponseWidget(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Segoe UI\'; font-size:20px; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:20px; color:#ffffff;\">Shiekh Islam</span><span style=\" font-size:20px;\"> </span><img src=\"C:/Users/Rachel Liang/Documents/pyQtExperimentation/Resources/verifiedtwitter.ico\" /><span style=\" font-size:20px;\"> </span><span style=\" font-size:20px; color:#8899a6;\">@SsHIs </span><span style=\" font-size:20px;\"> </span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:20px; color:#ffffff;\">Shiekh Islam</span><span style=\" font-size:20px;\"> </span><img src=\"Resources/verifiedtwitter.ico\" /><span style=\" font-size:20px;\"> </span><span style=\" font-size:20px; color:#8899a6;\">@SsHIs </span><span style=\" font-size:20px;\"> </span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
-        self.label_3.setText(_translate("ResponseWidget", "<html><head/><body><p><img src=\"C:/Users/Rachel Liang/Documents/pyQtExperimentation/Resources/drislampfp.ico\"/></p></body></html>"))
+        self.label_3.setText(_translate("ResponseWidget", "<html><head/><body><p><img src=\"Resources/drislampfp.ico\"/></p></body></html>"))
