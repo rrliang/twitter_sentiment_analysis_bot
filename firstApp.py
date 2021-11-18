@@ -276,7 +276,6 @@ class FirstApp(Ui_MainWindow):
         self.setupUi(window)
         self.addResponse('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n<html><head><meta name="qrichtext" content="1" /><style type="text/css">\np, li { white-space: pre-wrap; }\n</style></head><body style=" font-family:\'Segoe UI\'; font-size:20px; font-weight:400; font-style:normal;">\n<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">Shiekh Islam</span><span style=" font-size:20px;"> </span><img src="C:/Users/Rachel Liang/Documents/pyQtExperimentation/Resources/verifiedtwitter.ico" /><span style=" font-size:20px;"> </span><span style=" font-size:20px; color:#8899a6;">@SsHIs </span><span style=" font-size:20px;"> </span></p>\n<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">' \
                 + 'Try out the Twitter Sentiment Analysis by adding some text above and pressing the tweet button!' + '</span></p></body></html>')
-        self.tweetButton.setEnabled(True)
         self.tweetButton.clicked.connect(lambda:self.buttonClick())
         self.textEdit.textChanged.connect(lambda:self.checkstatus())
 
