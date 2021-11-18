@@ -1,4 +1,7 @@
+from PyQt5.QtGui import QKeyEvent
+from PyQt5.QtWidgets import QListWidgetItem, QFrame, QHBoxLayout, QAction
 from gui import *
+from responsewidget import*
 from PyQt5 import QtWidgets
 import re
 import pickle
@@ -263,28 +266,58 @@ def predictText(text):
    return result
 
 
+class responseWidget(QFrame, Ui_ResponseWidget):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
 class FirstApp(Ui_MainWindow):
     def __init__(self, window):
         self.setupUi(window)
-        #direct the signal to a method of our app class!
-        #self.pushButton.clicked.connect(self.clickMe)
+        self.addResponse('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n<html><head><meta name="qrichtext" content="1" /><style type="text/css">\np, li { white-space: pre-wrap; }\n</style></head><body style=" font-family:\'Segoe UI\'; font-size:20px; font-weight:400; font-style:normal;">\n<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">Shiekh Islam</span><span style=" font-size:20px;"> </span><img src="C:/Users/Rachel Liang/Documents/pyQtExperimentation/Resources/verifiedtwitter.ico" /><span style=" font-size:20px;"> </span><span style=" font-size:20px; color:#8899a6;">@SsHIs </span><span style=" font-size:20px;"> </span></p>\n<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">' \
+                + 'Try out the Twitter Sentiment Analysis by adding some text above and pressing the tweet button!' + '</span></p></body></html>')
+        self.tweetButton.setEnabled(True)
         self.tweetButton.clicked.connect(lambda:self.buttonClick())
+    #     self.textEdit.keyPressEvent(QKeyEvent)
+    #     self.textEdit.document().isEmpty()
+    #
+    # def keyPressEvent(self, event):
+    #     self.checkstatus()
+    #     print('gothere')
+    #
+    # def checkstatus(self):
+    #     if self.textEdit.text() == "":
+    #         self.tweetButton.setEnabled(False)
+    #     else:
+    #         self.tweetButton.setEnabled(True)
 
     def buttonClick(self):
         inputedText = self.textEdit.toPlainText()
-        self.showText(predictText(inputedText))
+        if inputedText != "":
+            self.showText(predictText(inputedText))
+            self.textEdit.clear()
 
     def showText(self, _str):
         text = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n<html><head><meta name="qrichtext" content="1" /><style type="text/css">\np, li { white-space: pre-wrap; }\n</style></head><body style=" font-family:\'Segoe UI\'; font-size:20px; font-weight:400; font-style:normal;">\n<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">Shiekh Islam</span><span style=" font-size:20px;"> </span><img src="C:/Users/Rachel Liang/Documents/pyQtExperimentation/Resources/verifiedtwitter.ico" /><span style=" font-size:20px;"> </span><span style=" font-size:20px; color:#8899a6;">@SsHIs </span><span style=" font-size:20px;"> </span></p>\n<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">' \
                + _str + '</span></p></body></html>'
-        self.textBrowser.setHtml(text)
+        previousText = text
+        self.addResponse(previousText)
 
+    def addResponse(self, text):
+        Item = QtWidgets.QListWidgetItem()
+        Item_Widget = responseWidget()
+        Item_Widget.textBrowser.setHtml(text)
+        Item.setSizeHint(Item_Widget.size())
+        self.listWidget.insertItem(0, Item)
+        self.listWidget.setItemWidget(Item, Item_Widget)
 
 
 app = QtWidgets.QApplication(sys.argv)
+#form = QtWidgets.QWidget()
 MainWindow = QtWidgets.QMainWindow()
 
 # Create an instance of our app!
+#uiForm = responseWidget(form)
 ui = FirstApp(MainWindow)
 
 #show the window and start the app
