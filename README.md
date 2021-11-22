@@ -25,6 +25,8 @@ twitter_sentiment_analysis_bot
 │           ├───cv
 │           ├───model_pickle
 │           ├───ROC Curve.png
+│           ├───lime.html
+│           ├───Lime Bargraph.png
 │           └───Train and test accuracy.png
 ├───QT Designer (GUI Building using PyQT5)
 │   ├───Inputs:
