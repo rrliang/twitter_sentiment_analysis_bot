@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import itertools
 import matplotlib.pyplot
 import nltk
 import warnings
@@ -12,6 +13,8 @@ import numpy as np
 import sklearn.feature_extraction.text
 from spacy.lang.en import STOP_WORDS
 from sklearn.naive_bayes import ComplementNB
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import BernoulliNB
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn.utils import shuffle
@@ -27,9 +30,11 @@ col_name = ['Polarity', 'ID', 'Time', 'Query', 'Username', 'Tweet']  # Label all
 tweet = pd.read_csv(r"training.1600000.processed.noemoticon.csv",
                     encoding='latin', header=None, names=col_name)  # Read csv
 tweet = tweet.sample(frac=1)  # Sample all rows. frac=1 means return all rows in random order
-tweet = tweet[:100]  # out of 1.6 million it takes a sample. Tried 1.6 million, 800,000 , and 200,000 to compare ROC curve and CNB acurracy.
-size = "100"
-tweet['Polarity'] = tweet['Polarity'].replace(4,1)  # Since neutral will not be tested, for simplicity it will be classified: 0 as negative and 1 as positive
+tweet = tweet[
+        :500000]  # out of 1.6 million it takes a sample. Tried 1.6 million, 800,000 , and 200,000 to compare ROC curve and CNB acurracy.
+size = "500000"
+tweet['Polarity'] = tweet['Polarity'].replace(4,
+                                              1)  # Since neutral will not be tested, for simplicity it will be classified: 0 as negative and 1 as positive
 
 tweet['Tweet'] = tweet['Tweet'].astype('str')  # converting pandas object to a string type
 
@@ -37,10 +42,12 @@ tweet.Tweet = tweet.Tweet.apply(lambda x: re.sub(r'http?:\/\/\S+', '', x))  # Re
 tweet.Tweet.apply(
     lambda x: re.sub(r"www\.[a-z]?\.?@[\w]+(com)+|[a-z]+\.(com)", '', x))  # Remove links with www. and com
 
+
 tweet['Tweet'] = tweet.Tweet.str.lower()  # Lower case all tweets
 tweet['Tweet'] = tweet.Tweet.apply(lambda x: re.sub('@[^\s]+', '', x))  # Remove @username
 tweet['Tweet'] = tweet.Tweet.apply(lambda x: re.sub("#[A-Za-z0-9_]", '', x))  # Remove #hashtag
 tweet['Tweet'] = tweet['Tweet'].apply(lambda x: re.sub(' RT ', "", x))  # Remove RT (Retweet)
+# tweet['Tweet'] = tweet.Tweet.apply(lambda x: ''.join(c[0] for c in itertools.groupby(x)))
 
 contractions = {
     " aight ": " alright ",
@@ -255,7 +262,8 @@ contractions = {
     " tm ": " trust me",
     "tm ": " trust me",
     " doa ": " dead on arrival ",
-    " callin ": " calling "
+    " callin ": " calling ",
+    "omgee": "oh my god",
 
 }  # copied from https://www.kaggle.com/raymant/text-processing-sentiment-analysis?scriptVersionId=33503187&cellId=23.
 
@@ -279,6 +287,9 @@ tweet['Tweet'] = tweet.Tweet.apply(lambda x: re.sub('[^a-zA-Z]', " ", x))  # Rem
 tweet['Tweet'] = tweet['Tweet'].apply(lambda x: " ".join(x.split()))  # Remove extra space between words
 tweet['Tweet'] = tweet['Tweet'].apply(
     lambda x: " ".join([w for w in x.split() if len(w) > 3]))  # Removing short words that are 3 characters or less
+
+# csv = tweet.to_csv('Preproccessed2.csv', index = False)
+
 gross = tweet['Tweet']
 tweet = shuffle(tweet).reset_index(drop=True)  # Reset the index after shuffling
 # token = RegexpTokenizer(r'[a-zA-Z0-9]+')
@@ -291,57 +302,156 @@ y = tweet['Polarity']
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, random_state=19)
 
 from sklearn.feature_extraction.text import TfidfVectorizer
-tf=TfidfVectorizer(strip_accents = 'ascii', stop_words='english')
+
+tf = TfidfVectorizer(strip_accents='ascii', stop_words='english')
 X_train_tf = tf.fit_transform(x_train)
 # transform the test set with vectoriser
 X_test_tf = tf.transform(x_test)
 x_tf = tf.transform(x)
+
 # Complement Naive Baiyes
 CNB = ComplementNB()
 CNB.fit(X_train_tf, y_train)
 CNB_cross_validation = cross_val_score(CNB, x_tf, y, n_jobs=-1)
-print("Cross Validation score = ", CNB_cross_validation)
-print("Train accuracy = {:.2f}%".format(CNB.score(X_train_tf, y_train) * 100))
-print("Test accuracy = {:.2f}%".format(CNB.score(X_test_tf, y_test) * 100))
+print("CNB Cross Validation score = ", CNB_cross_validation)
+print("CNB Train accuracy = {:.2f}%".format(CNB.score(X_train_tf, y_train) * 100))
+print("CNB Test accuracy = {:.2f}%".format(CNB.score(X_test_tf, y_test) * 100))
 CNB_train = CNB.score(X_train_tf, y_train)
 CNB_test = CNB.score(X_test_tf, y_test)
+print("CNB Confusion Matrix: ")
 CNB_complete = [CNB_train, CNB_test]
+print(" ")
+
+predict_CNB = CNB.predict(X_test_tf)  # Predict test
+
+print(confusion_matrix(y_test, predict_CNB))  # Print confusion matrix
+print(classification_report(y_test, predict_CNB))  # Performance check using Complement Naive Bayes
+
+
+# Multinomial Naive Bayes
+MNB = MultinomialNB()
+MNB.fit(X_train_tf, y_train)
+MNB_cross_validation = cross_val_score(MNB, x_tf, y, n_jobs=-1)
+print("MNB Cross Validation score = ", MNB_cross_validation)
+print("MNB Train accuracy = {:.2f}%".format(MNB.score(X_train_tf, y_train) * 100))
+print("MNB Test accuracy = {:.2f}%".format(MNB.score(X_test_tf, y_test) * 100))
+MNB_train = MNB.score(X_train_tf, y_train)
+MNB_test = MNB.score(X_test_tf, y_test)
+print("MNB Confusion Matrix: ")
+MNB_complete = [MNB_train, MNB_test]
+print(" ")
+
+predict_MNB = MNB.predict(X_test_tf)  # Predict test
+
+print(confusion_matrix(y_test, predict_MNB))  # Print confusion matrix
+print(classification_report(y_test, predict_MNB))  # Performance check using Multinomial Naive Bayes
+
+# Bernoulli Naive Bayes
+BNB = BernoulliNB()
+BNB.fit(X_train_tf, y_train)
+BNB_cross_validation = cross_val_score(BNB, x_tf, y, n_jobs=-1)
+print("BNB Cross Validation score = ", BNB_cross_validation)
+print("BNB Train accuracy = {:.2f}%".format(BNB.score(X_train_tf, y_train) * 100))
+print("BNB Test accuracy = {:.2f}%".format(BNB.score(X_test_tf, y_test) * 100))
+BNB_train = BNB.score(X_train_tf, y_train)
+BNB_test = BNB.score(X_test_tf, y_test)
+print("BNB Confusion Matrix: ")
+BNB_complete = [BNB_train, BNB_test]
+print(" ")
+
+predict_BNB = BNB.predict(X_test_tf)  # Predict test
+
+print(confusion_matrix(y_test, predict_BNB))  # Print confusion matrix
+print(classification_report(y_test, predict_BNB))  # Performance check using Multinomial Naive Bayes
 
 # Make a bar graph
 label = ['Train Accuracy', 'Test Accuracy']
 plt.xticks(range(len(CNB_complete)), label)
 plt.ylabel('Accuracy')
-plt.title('Accuracy bar graph for a sample of ' + size)
+plt.title('CNB Accuracy bar graph for a sample of ' + size)
 plt.bar(range(len(CNB_complete)), CNB_complete, color=['pink', 'black'])
 Train_acc = mpatches.Patch(color='pink', label='Train Accuracy')
 Test_acc = mpatches.Patch(color='black', label='Test Accuracy')
 plt.legend(handles=[Train_acc, Test_acc], loc='best')
-plt.gcf().set_size_inches(10, 10)
-plt.savefig('Train and test accuracy')
 
-predict_CNB = CNB.predict(X_test_tf)  # Predict test
+plt.gcf().set_size_inches(10, 10)
+plt.savefig('Train and test accuracy CNB')
+
+label = ['Train Accuracy', 'Test Accuracy']
+plt.xticks(range(len(MNB_complete)), label)
+plt.ylabel('Accuracy')
+plt.title('MNB Accuracy bar graph for a sample of ' + size)
+plt.bar(range(len(MNB_complete)), MNB_complete, color=['pink', 'black'])
+Train_acc = mpatches.Patch(color='pink', label='Train Accuracy')
+Test_acc = mpatches.Patch(color='black', label='Test Accuracy')
+plt.legend(handles=[Train_acc, Test_acc], loc='best')
+
+plt.gcf().set_size_inches(10, 10)
+plt.savefig('Train and test accuracy MNB')
+
+label = ['Train Accuracy', 'Test Accuracy']
+plt.xticks(range(len(BNB_complete)), label)
+plt.ylabel('Accuracy')
+plt.title('BNB Accuracy bar graph for a sample of ' + size)
+plt.bar(range(len(BNB_complete)), BNB_complete, color=['pink', 'black'])
+Train_acc = mpatches.Patch(color='pink', label='Train Accuracy')
+Test_acc = mpatches.Patch(color='black', label='Test Accuracy')
+plt.legend(handles=[Train_acc, Test_acc], loc='best')
+
+plt.gcf().set_size_inches(10, 10)
+plt.savefig('Train and test accuracy BNB')
 
 with open('model_pickle', 'wb') as f:
     pickle.dump(CNB, f)
 with open('cv', 'wb') as f:
     pickle.dump(tf, f)
 
-print(confusion_matrix(y_test, predict_CNB))  # Print confusion matrix
-print(classification_report(y_test, predict_CNB))  # Performance check using Complement Naive Bayes
 
 plt.clf()
 from sklearn.metrics import roc_curve
 
 fpr_dt_1, tpr_dt_1, _ = roc_curve(y_test, CNB.predict_proba(X_test_tf)[:, 1])
-plt.plot(fpr_dt_1, tpr_dt_1, label="ROC curve")
+plt.plot(fpr_dt_1, tpr_dt_1, label="ROC curve CNB")
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.legend()
 plt.gcf().set_size_inches(8, 8)
-plt.savefig('ROC Curve')
+plt.savefig('ROC Curve CNB')
 plt.clf()
-ROC_score = roc_auc_score(y_test, predict_CNB)  # Checking performance using ROC Score
-print("Area Under the Curve = ", ROC_score)
+
+
+fpr_dt_2, tpr_dt_2, _ = roc_curve(y_test, MNB.predict_proba(X_test_tf)[:, 1])
+plt.plot(fpr_dt_2, tpr_dt_2, label="ROC curve MNB")
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.legend()
+plt.gcf().set_size_inches(8, 8)
+plt.savefig('ROC Curve MNB')
+plt.clf()
+
+fpr_dt_3, tpr_dt_3, _ = roc_curve(y_test, BNB.predict_proba(X_test_tf)[:, 1])
+plt.plot(fpr_dt_3, tpr_dt_3, label="ROC curve BNB")
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.legend()
+plt.gcf().set_size_inches(8, 8)
+plt.savefig('ROC Curve BNB')
+plt.clf()
+
+
+
+
+ROC_score_CNB = roc_auc_score(y_test, predict_CNB)  # Checking performance using ROC Score
+print("CNB Area Under the Curve = ", ROC_score_CNB)
+print(" ")
+
+ROC_score_MNB = roc_auc_score(y_test, predict_MNB)  # Checking performance using ROC Score
+print("MNB Area Under the Curve = ", ROC_score_MNB)
+print(" ")
+
+ROC_score_BNB = roc_auc_score(y_test, predict_BNB)  # Checking performance using ROC Score
+print("BNB Area Under the Curve = ", ROC_score_BNB)
+print(" ")
 
 import lime
 import sklearn.ensemble
@@ -352,7 +462,8 @@ from lime.lime_text import LimeTextExplainer
 # converting the vectoriser and model into a pipeline
 # this is necessary as LIME takes a model pipeline as an input
 c = make_pipeline(tf, CNB)
-
+d = make_pipeline(tf, MNB)
+e = make_pipeline(tf, BNB)
 # saving a list of strings version of the X_test object
 # print(gross)
 ls_X_test = list(x_test)
@@ -368,12 +479,31 @@ idx = 15
 # use the probability results of the logistic regression
 # can also add num_features parameter to reduce the number of features explained
 LIME_exp = LIME_explainer.explain_instance(ls_X_test[idx], c.predict_proba)
+LIME_exp2 = LIME_explainer.explain_instance(ls_X_test[idx], d.predict_proba)
+LIME_exp3 = LIME_explainer.explain_instance(ls_X_test[idx], e.predict_proba)
+
+
 # print results
 print('Document id: %d' % idx)
 print('Tweet: ', ls_X_test[idx])
 print('Positivity =', c.predict_proba([ls_X_test[idx]]).round(3)[0, 1])
 print('True class: %s' % class_names.get(list(y_test)[idx]))
+print(" ")
 
-LIME_exp.save_to_file('lime.html')
+print('Document id: %d' % idx)
+print('Tweet: ', ls_X_test[idx])
+print('Positivity =', d.predict_proba([ls_X_test[idx]]).round(3)[0, 1])
+print('True class: %s' % class_names.get(list(y_test)[idx]))
+print(" ")
+
+print('Document id: %d' % idx)
+print('Tweet: ', ls_X_test[idx])
+print('Positivity =', e.predict_proba([ls_X_test[idx]]).round(3)[0, 1])
+print('True class: %s' % class_names.get(list(y_test)[idx]))
+print(" ")
+
+LIME_exp.save_to_file('lime_CNB.html') 
+LIME_exp2.save_to_file('lime_MNB.html')
+LIME_exp3.save_to_file('lime_BNB.html')
 LIME_exp.as_pyplot_figure()
 plt.savefig('Lime Bargraph')
