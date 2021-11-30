@@ -1,26 +1,21 @@
 from __future__ import print_function
 
-import itertools
-import matplotlib.pyplot
-import nltk
-import warnings
-import re
-import matplotlib.patches as mpatches
-import pandas as pd
-import matplotlib.pyplot as plt
 import pickle
-import numpy as np
-import sklearn.feature_extraction.text
-from spacy.lang.en import STOP_WORDS
+import re
+import warnings
+
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
+import nltk
+import pandas as pd
+from sklearn.metrics import *
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import BernoulliNB
 from sklearn.naive_bayes import ComplementNB
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.naive_bayes import BernoulliNB
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_score
 from sklearn.utils import shuffle
-from sklearn.feature_extraction.text import CountVectorizer
-from nltk.tokenize import RegexpTokenizer
-from sklearn.metrics import *
+from spacy.lang.en import STOP_WORDS
 
 warnings.filterwarnings('ignore')
 nltk.download('punkt')
@@ -30,24 +25,21 @@ col_name = ['Polarity', 'ID', 'Time', 'Query', 'Username', 'Tweet']  # Label all
 tweet = pd.read_csv(r"training.1600000.processed.noemoticon.csv",
                     encoding='latin', header=None, names=col_name)  # Read csv
 tweet = tweet.sample(frac=1)  # Sample all rows. frac=1 means return all rows in random order
+size = 1600000
 tweet = tweet[
-        :500000]  # out of 1.6 million it takes a sample. Tried 1.6 million, 800,000 , and 200,000 to compare ROC curve and CNB acurracy.
-size = "500000"
-tweet['Polarity'] = tweet['Polarity'].replace(4,
-                                              1)  # Since neutral will not be tested, for simplicity it will be classified: 0 as negative and 1 as positive
+        :size]  # out of 1.6 million it takes a sample.
+
+tweet['Polarity'] = tweet['Polarity'].replace(4,1)  # Since neutral will not be tested, for simplicity it will be classified: 0 as negative and 1 as positive
 
 tweet['Tweet'] = tweet['Tweet'].astype('str')  # converting pandas object to a string type
 
 tweet.Tweet = tweet.Tweet.apply(lambda x: re.sub(r'http?:\/\/\S+', '', x))  # Remove links with https
-tweet.Tweet.apply(
-    lambda x: re.sub(r"www\.[a-z]?\.?@[\w]+(com)+|[a-z]+\.(com)", '', x))  # Remove links with www. and com
-
+tweet.Tweet.apply(lambda x: re.sub(r"www\.[a-z]?\.?@[\w]+(com)+|[a-z]+\.(com)", '', x))  # Remove links with www. and com
 
 tweet['Tweet'] = tweet.Tweet.str.lower()  # Lower case all tweets
 tweet['Tweet'] = tweet.Tweet.apply(lambda x: re.sub('@[^\s]+', '', x))  # Remove @username
 tweet['Tweet'] = tweet.Tweet.apply(lambda x: re.sub("#[A-Za-z0-9_]", '', x))  # Remove #hashtag
 tweet['Tweet'] = tweet['Tweet'].apply(lambda x: re.sub(' RT ', "", x))  # Remove RT (Retweet)
-# tweet['Tweet'] = tweet.Tweet.apply(lambda x: ''.join(c[0] for c in itertools.groupby(x)))
 
 contractions = {
     " aight ": " alright ",
@@ -292,9 +284,6 @@ tweet['Tweet'] = tweet['Tweet'].apply(
 
 gross = tweet['Tweet']
 tweet = shuffle(tweet).reset_index(drop=True)  # Reset the index after shuffling
-# token = RegexpTokenizer(r'[a-zA-Z0-9]+')
-# cv = CountVectorizer(stop_words='english', ngram_range=(1, 1), tokenizer=token.tokenize)  # Tokenize tweet
-# tweet_counts = cv.fit_transform(tweet['Tweet'].values.astype('U'))  # Convert the data to Unicode
 
 # Splitting the dataset
 x = tweet['Tweet']  # changed from tweet['Tweet'], needed for CNB.fit to work!
@@ -305,6 +294,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 tf = TfidfVectorizer(strip_accents='ascii', stop_words='english')
 X_train_tf = tf.fit_transform(x_train)
+
 # transform the test set with vectoriser
 X_test_tf = tf.transform(x_test)
 x_tf = tf.transform(x)
@@ -368,46 +358,48 @@ print(classification_report(y_test, predict_BNB))  # Performance check using Mul
 label = ['Train Accuracy', 'Test Accuracy']
 plt.xticks(range(len(CNB_complete)), label)
 plt.ylabel('Accuracy')
-plt.title('CNB Accuracy bar graph for a sample of ' + size)
+plt.title('CNB Accuracy bar graph for a sample of ' + str(size))
 plt.bar(range(len(CNB_complete)), CNB_complete, color=['pink', 'black'])
 Train_acc = mpatches.Patch(color='pink', label='Train Accuracy')
 Test_acc = mpatches.Patch(color='black', label='Test Accuracy')
 plt.legend(handles=[Train_acc, Test_acc], loc='best')
-
 plt.gcf().set_size_inches(10, 10)
-plt.savefig('Train and test accuracy CNB')
+plt.savefig('outputs/accuracy/train_and_test_accuracy_CNB')
+plt.clf()
 
 label = ['Train Accuracy', 'Test Accuracy']
 plt.xticks(range(len(MNB_complete)), label)
 plt.ylabel('Accuracy')
-plt.title('MNB Accuracy bar graph for a sample of ' + size)
+plt.title('MNB Accuracy bar graph for a sample of ' + str(size))
 plt.bar(range(len(MNB_complete)), MNB_complete, color=['pink', 'black'])
 Train_acc = mpatches.Patch(color='pink', label='Train Accuracy')
 Test_acc = mpatches.Patch(color='black', label='Test Accuracy')
 plt.legend(handles=[Train_acc, Test_acc], loc='best')
-
 plt.gcf().set_size_inches(10, 10)
-plt.savefig('Train and test accuracy MNB')
+plt.savefig('outputs/accuracy/train_and_test_accuracy_MNB')
+plt.clf()
 
 label = ['Train Accuracy', 'Test Accuracy']
 plt.xticks(range(len(BNB_complete)), label)
 plt.ylabel('Accuracy')
-plt.title('BNB Accuracy bar graph for a sample of ' + size)
+plt.title('BNB Accuracy bar graph for a sample of ' + str(size))
 plt.bar(range(len(BNB_complete)), BNB_complete, color=['pink', 'black'])
 Train_acc = mpatches.Patch(color='pink', label='Train Accuracy')
 Test_acc = mpatches.Patch(color='black', label='Test Accuracy')
 plt.legend(handles=[Train_acc, Test_acc], loc='best')
-
 plt.gcf().set_size_inches(10, 10)
-plt.savefig('Train and test accuracy BNB')
+plt.savefig('outputs/accuracy/train_and_test_accuracy_BNB')
+plt.clf()
 
-with open('model_pickle', 'wb') as f:
+with open('outputs/pickled/CNB_model', 'wb') as f:
     pickle.dump(CNB, f)
-with open('cv', 'wb') as f:
+with open('outputs/pickled/MNB_model', 'wb') as f:
+    pickle.dump(MNB, f)
+with open('outputs/pickled/BNB_model', 'wb') as f:
+    pickle.dump(BNB, f)
+with open('outputs/pickled/cv', 'wb') as f:
     pickle.dump(tf, f)
 
-
-plt.clf()
 from sklearn.metrics import roc_curve
 
 fpr_dt_1, tpr_dt_1, _ = roc_curve(y_test, CNB.predict_proba(X_test_tf)[:, 1])
@@ -416,9 +408,8 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.legend()
 plt.gcf().set_size_inches(8, 8)
-plt.savefig('ROC Curve CNB')
+plt.savefig('outputs/ROC/ROC_curve_CNB')
 plt.clf()
-
 
 fpr_dt_2, tpr_dt_2, _ = roc_curve(y_test, MNB.predict_proba(X_test_tf)[:, 1])
 plt.plot(fpr_dt_2, tpr_dt_2, label="ROC curve MNB")
@@ -426,7 +417,7 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.legend()
 plt.gcf().set_size_inches(8, 8)
-plt.savefig('ROC Curve MNB')
+plt.savefig('outputs/ROC/ROC_curve_MNB')
 plt.clf()
 
 fpr_dt_3, tpr_dt_3, _ = roc_curve(y_test, BNB.predict_proba(X_test_tf)[:, 1])
@@ -435,11 +426,8 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.legend()
 plt.gcf().set_size_inches(8, 8)
-plt.savefig('ROC Curve BNB')
+plt.savefig('outputs/ROC/ROC_curve_BNB')
 plt.clf()
-
-
-
 
 ROC_score_CNB = roc_auc_score(y_test, predict_CNB)  # Checking performance using ROC Score
 print("CNB Area Under the Curve = ", ROC_score_CNB)
@@ -453,9 +441,6 @@ ROC_score_BNB = roc_auc_score(y_test, predict_BNB)  # Checking performance using
 print("BNB Area Under the Curve = ", ROC_score_BNB)
 print(" ")
 
-import lime
-import sklearn.ensemble
-from lime import lime_text
 from sklearn.pipeline import make_pipeline
 from lime.lime_text import LimeTextExplainer
 
@@ -467,20 +452,22 @@ e = make_pipeline(tf, BNB)
 # saving a list of strings version of the X_test object
 # print(gross)
 ls_X_test = list(x_test)
+
 # print(ls_X_test)
 # saving the class names in a dictionary to increase interpretability
-class_names = {0: 'negative', 1: 'positive'}
+class_names = {0:'negative', 1:'positive'}
 
 LIME_explainer = LimeTextExplainer(class_names=class_names)
 
 # choose a random single prediction
 idx = 15
+print(ls_X_test[idx])
 # explain the chosen prediction
 # use the probability results of the logistic regression
 # can also add num_features parameter to reduce the number of features explained
-LIME_exp = LIME_explainer.explain_instance(ls_X_test[idx], c.predict_proba)
-LIME_exp2 = LIME_explainer.explain_instance(ls_X_test[idx], d.predict_proba)
-LIME_exp3 = LIME_explainer.explain_instance(ls_X_test[idx], e.predict_proba)
+LIME_exp_CNB = LIME_explainer.explain_instance(ls_X_test[idx], c.predict_proba)
+LIME_exp_MNB = LIME_explainer.explain_instance(ls_X_test[idx], d.predict_proba)
+LIME_exp_BNB = LIME_explainer.explain_instance(ls_X_test[idx], e.predict_proba)
 
 
 # print results
@@ -502,8 +489,18 @@ print('Positivity =', e.predict_proba([ls_X_test[idx]]).round(3)[0, 1])
 print('True class: %s' % class_names.get(list(y_test)[idx]))
 print(" ")
 
-LIME_exp.save_to_file('lime_CNB.html') 
-LIME_exp2.save_to_file('lime_MNB.html')
-LIME_exp3.save_to_file('lime_BNB.html')
-LIME_exp.as_pyplot_figure()
-plt.savefig('Lime Bargraph')
+LIME_exp_CNB.save_to_file('outputs/lime/lime_CNB.html')
+LIME_exp_MNB.save_to_file('outputs/lime/lime_MNB.html')
+LIME_exp_BNB.save_to_file('outputs/lime/lime_BNB.html')
+
+LIME_exp_CNB.as_pyplot_figure()
+plt.savefig('outputs/lime/lime_CNB_bargraph')
+plt.clf()
+
+LIME_exp_MNB.as_pyplot_figure()
+plt.savefig('outputs/lime/lime_MNB_bargraph')
+plt.clf()
+
+LIME_exp_BNB.as_pyplot_figure()
+plt.savefig('outputs/lime/lime_BNB_bargraph')
+plt.clf()

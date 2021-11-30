@@ -1,3 +1,5 @@
+import os
+
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QListWidgetItem, QFrame, QHBoxLayout, QAction
 from gui import *
@@ -10,9 +12,24 @@ import sklearn
 import nltk
 import sys
 
-with open('model_pickle','rb') as f:
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = os.environ['_MEIPASS2']
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+myfile = resource_path("Resources\\lime.png")
+if os.path.isfile(myfile):
+    os.remove(myfile)
+
+with open(resource_path("outputs\\pickled\\BNB_model"),'rb') as f:
    model = pickle.load(f)
-with open('cv','rb') as f:
+with open(resource_path("outputs\\pickled\\cv"),'rb') as f:
    cv = pickle.load(f)
 def preprocess_string(stringtopre):
    stringtopre = re.sub(r'http?:\/\/\S+', '', stringtopre)  # Remove links with https
@@ -258,12 +275,34 @@ def preprocess_string(stringtopre):
 
 def predictText(text):
    x_test = preprocess_string(text)
-   ayo = cv.transform([x_test])
-   if model.predict(ayo) == 1:
-       result ='The string "' + text + '" is positive!'
-   elif model.predict(ayo) == 0:
-       result = 'The string "' + text + '" is negative!'
+   if x_test != "":
+       ayo = cv.transform([x_test])
+       predicted = model.predict(ayo)
+       if predicted == 1:
+           result = 'The string "' + text + '" is positive!'
+       elif predicted == 0:
+           result = 'The string "' + text + '" is negative!'
+       limeExplainer(x_test)
+   else:
+       result = 'The string "' + text + '" could not be predicted as it becomes null after preprocessing.'
    return result
+
+def limeExplainer(text):
+    from sklearn.pipeline import make_pipeline
+    from lime.lime_text import LimeTextExplainer
+    # from .lime_text import LimeTextExplainer
+    class_names = {0: 'negative', 1: 'positive'}
+    LIME_explainer = LimeTextExplainer(class_names=class_names)
+    e = make_pipeline(cv, model)
+    LIME_exp_BNB = LIME_explainer.explain_instance(text, e.predict_proba)
+    LIME_exp_BNB.save_to_file(resource_path("Resources\\lime.html"))
+    htmlToImage()
+
+def htmlToImage():
+    import imgkit
+    path_wkhtmltoimg = resource_path("wkhtmltoimage.exe")
+    config = imgkit.config(wkhtmltoimage=path_wkhtmltoimg)
+    imgkit.from_url(resource_path("Resources\\lime.html"), resource_path("Resources\\lime.png"))
 
 
 class responseWidget(QFrame, Ui_ResponseWidget):
@@ -274,44 +313,52 @@ class responseWidget(QFrame, Ui_ResponseWidget):
 class FirstApp(Ui_MainWindow):
     def __init__(self, window):
         self.setupUi(window)
-        self.addResponse('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n<html><head><meta name="qrichtext" content="1" /><style type="text/css">\np, li { white-space: pre-wrap; }\n</style></head><body style=" font-family:\'Segoe UI\'; font-size:20px; font-weight:400; font-style:normal;">\n<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">Shiekh Islam</span><span style=" font-size:20px;"> </span><img src="Resources/verifiedtwitter.ico" /><span style=" font-size:20px;"> </span><span style=" font-size:20px; color:#8899a6;">@SsHIs </span><span style=" font-size:20px;"> </span></p>\n<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">' \
-                + 'Try out the Twitter Sentiment Analysis by adding some text above and pressing the tweet button!' + '</span></p></body></html>')
+        self.addResponse('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n<html><head><meta name="qrichtext" content="1" /><style type="text/css">\np, li { white-space: pre-wrap; }\n</style></head><body style=" font-family:\'Segoe UI\'; font-size:20px; font-weight:400; font-style:normal;">\n<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">Shiekh Islam</span><span style=" font-size:20px;"> </span><img src="'+resource_path("Resources\\verifiedtwitter.ico")+'" /><span style=" font-size:20px;"> </span><span style=" font-size:20px; color:#8899a6;">@SsHIs </span><span style=" font-size:20px;"> </span></p>\n<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">' \
+                + '<br>Try out the Twitter Sentiment Analysis by adding some text above and pressing the tweet button!</br>' + '</span></p></body></html>')
+        size = 280
+        self.limit.setText(str(size))
         self.tweetButton.clicked.connect(lambda:self.buttonClick())
         self.textEdit.textChanged.connect(lambda: self.checkstatus())
 
     def checkstatus(self):
-        if self.textEdit.toPlainText() == "":
+        size = 280 - len(self.textEdit.toPlainText())
+        self.limit.setText(str(size))
+        if size == 280 or size < 0:
             self.tweetButton.setEnabled(False)
-        else:
+        elif size >= 0:
             self.tweetButton.setEnabled(True)
 
     def buttonClick(self):
         inputedText = self.textEdit.toPlainText()
-        if inputedText != "":
-            self.showText(predictText(inputedText))
-            self.textEdit.clear()
+        self.showText(predictText(inputedText))
+        self.textEdit.clear()
+
 
     def showText(self, _str):
-        text = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n<html><head><meta name="qrichtext" content="1" /><style type="text/css">\np, li { white-space: pre-wrap; }\n</style></head><body style=" font-family:\'Segoe UI\'; font-size:20px; font-weight:400; font-style:normal;">\n<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">Shiekh Islam</span><span style=" font-size:20px;"> </span><img src="Resources/verifiedtwitter.ico" /><span style=" font-size:20px;"> </span><span style=" font-size:20px; color:#8899a6;">@SsHIs </span><span style=" font-size:20px;"> </span></p>\n<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">' \
-               + _str + '</span></p></body></html>'
+        if os.path.isfile(myfile):
+            text = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n<html><head><meta name="qrichtext" content="1" /><style type="text/css">\np, li { white-space: pre-wrap; }\n</style></head><body style=" font-family:\'Segoe UI\'; font-size:20px; font-weight:400; font-style:normal;">\n<p style=" margin-top:0px; margin-bottom:-5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;"><br>Shiekh Islam</span><span style=" font-size:20px;"> </span><img src="'+resource_path("Resources\\verifiedtwitter.ico")+'" /><span style=" font-size:20px;"> </span><span style=" font-size:20px; color:#8899a6;">@SsHIs </span></br><span style=" font-size:20px;"> </span></p>\n<p style=" margin-top:0px; margin-bottom:-5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">' \
+                   '<br>' + _str + '</br><br><img src="'+resource_path("Resources\\lime.png")+'" /></br>' + '</span></p></body></html>'
+        else:
+            text = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n<html><head><meta name="qrichtext" content="1" /><style type="text/css">\np, li { white-space: pre-wrap; }\n</style></head><body style=" font-family:\'Segoe UI\'; font-size:20px; font-weight:400; font-style:normal;">\n<p style=" margin-top:0px; margin-bottom:-5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;"><br>Shiekh Islam</span><span style=" font-size:20px;"> </span><img src="'+resource_path("Resources\\verifiedtwitter.ico")+'" /><span style=" font-size:20px;"> </span><span style=" font-size:20px; color:#8899a6;">@SsHIs </span></br><span style=" font-size:20px;"> </span></p>\n<p style=" margin-top:0px; margin-bottom:-5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:20px; color:#ffffff;">' \
+                   '<br>' + _str + '</span></p></body></html>'
         previousText = text
         self.addResponse(previousText)
 
     def addResponse(self, text):
         Item = QtWidgets.QListWidgetItem()
         Item_Widget = responseWidget()
-        Item_Widget.textBrowser.setHtml(text)
+        Item_Widget.label.setText(text)
+
+        Item_Widget.adjustSize()
+        Item_Widget.label.setMinimumSize(480, 320)
         Item.setSizeHint(Item_Widget.size())
         self.listWidget.insertItem(0, Item)
         self.listWidget.setItemWidget(Item, Item_Widget)
 
-
 app = QtWidgets.QApplication(sys.argv)
-#form = QtWidgets.QWidget()
 MainWindow = QtWidgets.QMainWindow()
 
 # Create an instance of our app!
-#uiForm = responseWidget(form)
 ui = FirstApp(MainWindow)
 
 #show the window and start the app

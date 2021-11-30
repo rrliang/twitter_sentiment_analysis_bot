@@ -14,21 +14,45 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ResponseWidget(object):
     def setupUi(self, ResponseWidget):
         ResponseWidget.setObjectName("ResponseWidget")
-        ResponseWidget.resize(652, 181)
-        ResponseWidget.setStyleSheet("background-color:rgb(21,32,43);")
-        self.frame = QtWidgets.QFrame(ResponseWidget)
-        self.frame.setGeometry(QtCore.QRect(0, 0, 591, 181))
-        self.frame.setStyleSheet("border: 1px solid rgb(56,68,77);")
-        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame.setObjectName("frame")
-        self.textBrowser = QtWidgets.QTextBrowser(self.frame)
-        self.textBrowser.setGeometry(QtCore.QRect(90, 10, 491, 141))
+        ResponseWidget.resize(582, 184)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(1)
+        sizePolicy.setHeightForWidth(ResponseWidget.sizePolicy().hasHeightForWidth())
+        ResponseWidget.setSizePolicy(sizePolicy)
+        ResponseWidget.setSizeIncrement(QtCore.QSize(0, 1))
+        ResponseWidget.setStyleSheet("background-color:rgb(21,32,43);\n"
+"border: 1px solid rgb(56,68,77);")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(ResponseWidget)
+        self.horizontalLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.horizontalLayout.setContentsMargins(11, 0, 4, 0)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.label_3 = QtWidgets.QLabel(ResponseWidget)
+        self.label_3.setEnabled(True)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
+        self.label_3.setSizePolicy(sizePolicy)
+        self.label_3.setMinimumSize(QtCore.QSize(61, 61))
+        self.label_3.setStyleSheet("background-color:rgb(21,32,43);\n"
+"border:none;")
+        self.label_3.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.label_3.setObjectName("label_3")
+        self.horizontalLayout.addWidget(self.label_3)
+        self.label = QtWidgets.QLabel(ResponseWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(1)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+        self.label.setMinimumSize(QtCore.QSize(481, 131))
+        self.label.setSizeIncrement(QtCore.QSize(0, 1))
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(-1)
-        self.textBrowser.setFont(font)
-        self.textBrowser.setStyleSheet("color:white;\n"
+        self.label.setFont(font)
+        self.label.setStyleSheet("color:white;\n"
 "font-size:20px;\n"
 "overflow: hidden;\n"
 "padding: 12px;\n"
@@ -37,15 +61,12 @@ class Ui_ResponseWidget(object):
 "min-height: 24px;\n"
 "max-height: 720px;\n"
 "border:none;")
-        self.textBrowser.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.textBrowser.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
-        self.textBrowser.setPlaceholderText("")
-        self.textBrowser.setObjectName("textBrowser")
-        self.label_3 = QtWidgets.QLabel(self.frame)
-        self.label_3.setGeometry(QtCore.QRect(20, 20, 61, 61))
-        self.label_3.setStyleSheet("background-color:rgb(21,32,43);\n"
-"border:none;")
-        self.label_3.setObjectName("label_3")
+        self.label.setLineWidth(6)
+        self.label.setScaledContents(True)
+        self.label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.label.setWordWrap(True)
+        self.label.setObjectName("label")
+        self.horizontalLayout.addWidget(self.label)
 
         self.retranslateUi(ResponseWidget)
         QtCore.QMetaObject.connectSlotsByName(ResponseWidget)
@@ -53,10 +74,5 @@ class Ui_ResponseWidget(object):
     def retranslateUi(self, ResponseWidget):
         _translate = QtCore.QCoreApplication.translate
         ResponseWidget.setWindowTitle(_translate("ResponseWidget", "Form"))
-        self.textBrowser.setHtml(_translate("ResponseWidget", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Segoe UI\'; font-size:20px; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:20px; color:#ffffff;\">Shiekh Islam</span><span style=\" font-size:20px;\"> </span><img src=\"Resources/verifiedtwitter.ico\" /><span style=\" font-size:20px;\"> </span><span style=\" font-size:20px; color:#8899a6;\">@SsHIs </span><span style=\" font-size:20px;\"> </span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
-        self.label_3.setText(_translate("ResponseWidget", "<html><head/><body><p><img src=\"Resources/drislampfp.ico\"/></p></body></html>"))
+        self.label_3.setText(_translate("ResponseWidget", "<html><head/><body><p><br/></p><p><img src=\"Resources/drislampfp.ico\"/></p></body></html>"))
+        self.label.setText(_translate("ResponseWidget", "<html><head/><body><p><span style=\" font-size:20px; color:#ffffff;\">Shiekh Islam</span><span style=\" font-size:20px;\"/><img src=\"Resources/verifiedtwitter.ico\"/><span style=\" font-size:20px;\"/><span style=\" font-size:20px; color:#8899a6;\">@SsHIs </span><span style=\" font-size:20px;\"/></p><p><br/></p></body></html>"))
