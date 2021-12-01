@@ -504,3 +504,18 @@ plt.clf()
 LIME_exp_BNB.as_pyplot_figure()
 plt.savefig('outputs/lime/lime_BNB_bargraph')
 plt.clf()
+
+from wordcloud import WordCloud
+
+tweet_pos = tweet[tweet['Polarity'] == 1] # Only collect tweets that are positive
+tweet_neg = tweet[tweet['Polarity'] == 0] # Only collect tweets that are negative
+
+plt.figure(figsize = (20,20))
+wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_neg['Tweet']))
+plt.imshow(wc , interpolation = 'bilinear')
+plt.savefig("Word Cloud Negative")
+
+plt.figure(figsize = (20,20))
+wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_pos['Tweet']))
+plt.imshow(wc , interpolation = 'bilinear')
+plt.savefig("Word Cloud Positive")
