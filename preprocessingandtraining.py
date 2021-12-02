@@ -513,9 +513,9 @@ tweet_neg = tweet[tweet['Polarity'] == 0] # Only collect tweets that are negativ
 plt.figure(figsize = (20,20))
 wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_neg['Tweet']))
 plt.imshow(wc , interpolation = 'bilinear')
-plt.savefig("Word Cloud Negative")
+plt.savefig("outputs/wordcloud/word_cloud_negative")
 
 plt.figure(figsize = (20,20))
 wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_pos['Tweet']))
 plt.imshow(wc , interpolation = 'bilinear')
-plt.savefig("Word Cloud Positive")
+plt.savefig("outputs/wordcloud/word_cloud_positive")
