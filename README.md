@@ -21,19 +21,19 @@ WARNING- in order to run everything correctly, please clone the repository as th
 
 ## Packages to install beforehand
 Additionally, included packages that must be installed:  
-    pickle  
-    re  
-    warnings  
-    matplotlib  
-    nltk  
-    pandas  
-    sklearn  
-    spacy  
-    lime  
-    wordcloud  
-    PyQt5  
-    sys  
-    imgkit  
+- pickle  
+- re  
+- warnings  
+- matplotlib  
+- nltk  
+- pandas  
+- sklearn  
+- spacy  
+- lime  
+- wordcloud  
+- PyQt5  
+- sys  
+- imgkit  
 
 ## Related files to directory and processes
 ```bash
