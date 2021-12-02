@@ -43,10 +43,10 @@ twitter_sentiment_analysis_bot
 │           │   ├───ROC_curve_BNB.png
 │           │   ├───ROC_curve_CNB.png
 │           │   └───ROC_curve_MNB.png
-│           ├───accuracy
+│           ├───wordcloud
 │           │   ├───Word Cloud Negative.png
 │           │   └───Word Cloud Positive.png
-│           ├───wordcloud
+│           ├───accuracy
 │           │   ├───train_and_test_accuracy_BNB.png
 │           │   ├───train_and_test_accuracy_CNB.png
 │           │   └───train_and_test_accuracy_MNB.png
