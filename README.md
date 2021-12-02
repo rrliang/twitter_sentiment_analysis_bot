@@ -44,8 +44,8 @@ twitter_sentiment_analysis_bot
 │           │   ├───ROC_curve_CNB.png
 │           │   └───ROC_curve_MNB.png
 │           ├───wordcloud
-│           │   ├───Word Cloud Negative.png
-│           │   └───Word Cloud Positive.png
+│           │   ├───word_cloud_negative.png
+│           │   └───word_cloud_positive.png
 │           ├───accuracy
 │           │   ├───train_and_test_accuracy_BNB.png
 │           │   ├───train_and_test_accuracy_CNB.png
