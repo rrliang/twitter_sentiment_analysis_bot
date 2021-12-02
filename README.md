@@ -1,15 +1,15 @@
 # twitter_sentiment_analysis_bot
-##For the University of Hartford, CS 368 Data Mining class.  
-###Created by Alana Cedeno and Rachel Liang.
+## For the University of Hartford, CS 368 Data Mining class.  
+### Created by Alana Cedeno and Rachel Liang.
 -----------------------------------------
 This repository contains trained models on Twitter sentiment analysis.
 It has a GUI to utilize the trained data models.  
 
-##Preprocess and train
+## Preprocess and train
 To preprocess and train the model using NaiveBayes, run the preprocessingandtraining.py file.
 This should output a cv, model_pickle, ROC Curve.png, and Train and test accuracy.png.  
 
-##Testing and GUI
+## Testing and GUI
 To run GUI on the trained data, run the firstApp.py. This file uses the Gui.ui, and responsewidget.ui files, which can be opened and edited on Qt Designer.  
 Additionally, the firstApp.py requires the ui files to be transformed into py files, so in a terminal where PyQT5 has been installed, run the command:  
 pyuic5 filename.ui -o filename.py  
@@ -19,7 +19,7 @@ pyrcc5 twitter.qrc -o twitter.py
 
 WARNING- in order to run everything correctly, please clone the repository as the CSV and wkhtmltoimage.exe do not correctly download if you just download the repo as zip. If you do not want to clone the repository, download as zip, and replace the CSV from this Kaggle link: https://www.kaggle.com/kazanova/sentiment140 and you can download the wkhtmltoimage.exe from: https://drive.google.com/file/d/1vXJI05UujZq7ER2H-d_fJwkdEeciOSMh/view?usp=sharing
 
-##Packages to install beforehand
+## Packages to install beforehand
 Additionally, included packages that must be installed:  
     pickle  
     re  
@@ -35,6 +35,7 @@ Additionally, included packages that must be installed:
     sys  
     imgkit  
 
+## Related files to directory and processes
 ```bash
 twitter_sentiment_analysis_bot
 ├───Preprocess and train
