@@ -364,6 +364,8 @@ Train_acc = mpatches.Patch(color='pink', label='Train Accuracy')
 Test_acc = mpatches.Patch(color='black', label='Test Accuracy')
 plt.legend(handles=[Train_acc, Test_acc], loc='best')
 plt.gcf().set_size_inches(10, 10)
+if not os.path.isdir('outputs/accuracy'):
+    os.makedirs('outputs/accuracy')
 plt.savefig('outputs/accuracy/train_and_test_accuracy_CNB')
 plt.clf()
 
@@ -390,7 +392,8 @@ plt.legend(handles=[Train_acc, Test_acc], loc='best')
 plt.gcf().set_size_inches(10, 10)
 plt.savefig('outputs/accuracy/train_and_test_accuracy_BNB')
 plt.clf()
-
+if not os.path.isdir('outputs/pickled'):
+    os.makedirs('outputs/pickled')
 with open('outputs/pickled/CNB_model', 'wb') as f:
     pickle.dump(CNB, f)
 with open('outputs/pickled/MNB_model', 'wb') as f:
@@ -408,6 +411,8 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.legend()
 plt.gcf().set_size_inches(8, 8)
+if not os.path.isdir('outputs/ROC'):
+    os.makedirs('outputs/ROC')
 plt.savefig('outputs/ROC/ROC_curve_CNB')
 plt.clf()
 
@@ -489,6 +494,9 @@ print('Positivity =', e.predict_proba([ls_X_test[idx]]).round(3)[0, 1])
 print('True class: %s' % class_names.get(list(y_test)[idx]))
 print(" ")
 
+if not os.path.isdir('outputs/lime'):
+    os.makedirs('outputs/lime')
+
 LIME_exp_CNB.save_to_file('outputs/lime/lime_CNB.html')
 LIME_exp_MNB.save_to_file('outputs/lime/lime_MNB.html')
 LIME_exp_BNB.save_to_file('outputs/lime/lime_BNB.html')
@@ -509,6 +517,9 @@ from wordcloud import WordCloud
 
 tweet_pos = tweet[tweet['Polarity'] == 1] # Only collect tweets that are positive
 tweet_neg = tweet[tweet['Polarity'] == 0] # Only collect tweets that are negative
+
+if not os.path.isdir('outputs/wordcloud'):
+    os.makedirs('outputs/wordcloud')
 
 plt.figure(figsize = (20,20))
 wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_neg['Tweet']))

@@ -3,6 +3,7 @@ from __future__ import print_function
 import pickle
 import re
 import warnings
+import os
 
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
@@ -364,6 +365,8 @@ Train_acc = mpatches.Patch(color='pink', label='Train Accuracy')
 Test_acc = mpatches.Patch(color='black', label='Test Accuracy')
 plt.legend(handles=[Train_acc, Test_acc], loc='best')
 plt.gcf().set_size_inches(10, 10)
+if not os.path.isdir('outputs/accuracy'):
+    os.makedirs('outputs/accuracy')
 plt.savefig('outputs/accuracy/train_and_test_accuracy_CNB')
 plt.clf()
 
@@ -391,6 +394,8 @@ plt.gcf().set_size_inches(10, 10)
 plt.savefig('outputs/accuracy/train_and_test_accuracy_BNB')
 plt.clf()
 
+if not os.path.isdir('outputs/pickled'):
+    os.makedirs('outputs/pickled')
 with open('outputs/pickled/CNB_model', 'wb') as f:
     pickle.dump(CNB, f)
 with open('outputs/pickled/MNB_model', 'wb') as f:
@@ -401,6 +406,9 @@ with open('outputs/pickled/cv', 'wb') as f:
     pickle.dump(tf, f)
 
 from sklearn.metrics import roc_curve
+
+if not os.path.isdir('outputs/ROC'):
+    os.makedirs('outputs/ROC')
 
 fpr_dt_1, tpr_dt_1, _ = roc_curve(y_test, CNB.predict_proba(X_test_tf)[:, 1])
 plt.plot(fpr_dt_1, tpr_dt_1, label="ROC curve CNB")
@@ -489,6 +497,9 @@ print('Positivity =', e.predict_proba([ls_X_test[idx]]).round(3)[0, 1])
 print('True class: %s' % class_names.get(list(y_test)[idx]))
 print(" ")
 
+if not os.path.isdir('outputs/lime'):
+    os.makedirs('outputs/lime')
+
 LIME_exp_CNB.save_to_file('outputs/lime/lime_CNB.html')
 LIME_exp_MNB.save_to_file('outputs/lime/lime_MNB.html')
 LIME_exp_BNB.save_to_file('outputs/lime/lime_BNB.html')
@@ -505,17 +516,20 @@ LIME_exp_BNB.as_pyplot_figure()
 plt.savefig('outputs/lime/lime_BNB_bargraph')
 plt.clf()
 
-# from wordcloud import WordCloud
-#
-# tweet_pos = tweet[tweet['Polarity'] == 1] # Only collect tweets that are positive
-# tweet_neg = tweet[tweet['Polarity'] == 0] # Only collect tweets that are negative
-#
-# plt.figure(figsize = (20,20))
-# wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_neg['Tweet']))
-# plt.imshow(wc , interpolation = 'bilinear')
-# plt.savefig("outputs/wordcloud/word_cloud_negative")
-#
-# plt.figure(figsize = (20,20))
-# wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_pos['Tweet']))
-# plt.imshow(wc , interpolation = 'bilinear')
-# plt.savefig("outputs/wordcloud/word_cloud_positive")
+from wordcloud import WordCloud
+
+tweet_pos = tweet[tweet['Polarity'] == 1] # Only collect tweets that are positive
+tweet_neg = tweet[tweet['Polarity'] == 0] # Only collect tweets that are negative
+
+if not os.path.isdir('outputs/wordcloud'):
+    os.makedirs('outputs/wordcloud')
+
+plt.figure(figsize = (20,20))
+wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_neg['Tweet']))
+plt.imshow(wc , interpolation = 'bilinear')
+plt.savefig("outputs/wordcloud/word_cloud_negative")
+
+plt.figure(figsize = (20,20))
+wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_pos['Tweet']))
+plt.imshow(wc , interpolation = 'bilinear')
+plt.savefig("outputs/wordcloud/word_cloud_positive")
