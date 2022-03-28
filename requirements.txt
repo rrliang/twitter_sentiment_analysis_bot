@@ -12,6 +12,14 @@ torch>=1.7.0
 torchvision>=0.8.1
 tqdm>=4.41.0
 
+# Text ----------------------------------------
+nltk>=3.7
+matplotlib>=3.5.1
+lime>=0.2.0.1
+wordcloud>=1.8.1
+spacy>=3.1.4
+scikit-learn>=0.19.2
+
 # Logging -------------------------------------
 tensorboard>=2.4.1
 # wandb
