@@ -533,3 +533,39 @@ plt.figure(figsize = (20,20))
 wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_pos['Tweet']))
 plt.imshow(wc , interpolation = 'bilinear')
 plt.savefig("outputs/wordcloud/word_cloud_positive")
+
+#img processing confidence
+img_path = 'img5.jpg'
+os.system("python detect.py --weights best.pt --source " + img_path)
+
+threats = ['knife', 'gun', 'bullet', 'knives', 'blood', 'knifes', 'guns', 'bullets', 'bloods']
+
+#if os.path.isdir('outputs/output.txt'):
+lines = []
+conf = []
+with open('outputs/output.txt') as f:
+    lines = f.readlines()
+n = lines[0][:-1].split(':')
+detectedClass = n[2].split(',')
+if len(lines)>0:
+  for i in range(1, len(lines)):
+      if lines[i] != " ":
+          conf.append(lines[i].split('(')[1][:-2])
+for i in range(len(conf)):
+    if any(ext in detectedClass[i] for ext in threats):
+        if (float(conf[i]) > .5):
+            text_file = open("outputs/output.txt", "a")
+            text_file.write("negative")
+            text_file.close()
+            break
+        else:
+            text_file = open("outputs/output.txt", "a")
+            text_file.write("positive")
+            text_file.close()
+            break
+    else:
+        text_file = open("outputs/output.txt", "a")
+        text_file.write("positive")
+        text_file.close()
+
+print("DONE!")
