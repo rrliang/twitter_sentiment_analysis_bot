@@ -4,6 +4,7 @@ import pickle
 import re
 import warnings
 import os
+import torch
 
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
@@ -516,56 +517,68 @@ LIME_exp_BNB.as_pyplot_figure()
 plt.savefig('outputs/lime/lime_BNB_bargraph')
 plt.clf()
 
-from wordcloud import WordCloud
+# from wordcloud import WordCloud
 
 tweet_pos = tweet[tweet['Polarity'] == 1] # Only collect tweets that are positive
 tweet_neg = tweet[tweet['Polarity'] == 0] # Only collect tweets that are negative
 
-if not os.path.isdir('outputs/wordcloud'):
-    os.makedirs('outputs/wordcloud')
+# if not os.path.isdir('outputs/wordcloud'):
+#     os.makedirs('outputs/wordcloud')
 
-plt.figure(figsize = (20,20))
-wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_neg['Tweet']))
-plt.imshow(wc , interpolation = 'bilinear')
-plt.savefig("outputs/wordcloud/word_cloud_negative")
-
-plt.figure(figsize = (20,20))
-wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_pos['Tweet']))
-plt.imshow(wc , interpolation = 'bilinear')
-plt.savefig("outputs/wordcloud/word_cloud_positive")
+# plt.figure(figsize = (20,20))
+# wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_neg['Tweet']))
+# plt.imshow(wc , interpolation = 'bilinear')
+# plt.savefig("outputs/wordcloud/word_cloud_negative")
+#
+# plt.figure(figsize = (20,20))
+# wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_pos['Tweet']))
+# plt.imshow(wc , interpolation = 'bilinear')
+# plt.savefig("outputs/wordcloud/word_cloud_positive")
 
 #img processing confidence
-img_path = 'img5.jpg'
-os.system("python detect.py --weights best.pt --source " + img_path)
+img_path = 'img.jpg'
+
+# Model
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='best.pt')
+results = model(img_path)
+
+txt_file2 = open('outputs/output.txt','w')
+content2 = txt_file2.write(str(results.pandas().xyxy[0]))
+txt_file2.close();
 
 threats = ['knife', 'gun', 'bullet', 'knives', 'blood', 'knifes', 'guns', 'bullets', 'bloods']
 
 #if os.path.isdir('outputs/output.txt'):
 lines = []
 conf = []
+avg = 0
+counter =0
 with open('outputs/output.txt') as f:
     lines = f.readlines()
-n = lines[0][:-1].split(':')
-detectedClass = n[2].split(',')
-if len(lines)>0:
-  for i in range(1, len(lines)):
-      if lines[i] != " ":
-          conf.append(lines[i].split('(')[1][:-2])
-for i in range(len(conf)):
-    if any(ext in detectedClass[i] for ext in threats):
-        if (float(conf[i]) > .5):
-            text_file = open("outputs/output.txt", "a")
-            text_file.write("negative")
-            text_file.close()
-            break
-        else:
-            text_file = open("outputs/output.txt", "a")
-            text_file.write("positive")
-            text_file.close()
-            break
+if (len(lines) >1):
+    for i in range (1, len(lines)):
+        sp = lines[i].split()
+        print(sp[7])
+        print(sp)
+        print(str(sp[5]))
+        if any(ext in sp[7] for ext in threats):
+            avg += float(sp[5])
+            counter += 1
+if counter>0:
+    average = avg/counter
+    if (average > 0.5):
+        text_file = open("outputs/output.txt", "a")
+        text_file.write("\nthreat found: " + str(average))
+        text_file.close()
     else:
         text_file = open("outputs/output.txt", "a")
-        text_file.write("positive")
+        text_file.write("\nthreat found but not confident enough: " + str(average))
         text_file.close()
+else:
+    text_file = open("outputs/output.txt", "a")
+    text_file.write("\nno threats found")
+    text_file.close()
+
+
 
 print("DONE!")
