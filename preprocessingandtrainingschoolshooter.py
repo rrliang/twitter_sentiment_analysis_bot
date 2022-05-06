@@ -517,23 +517,23 @@ LIME_exp_BNB.as_pyplot_figure()
 plt.savefig('outputs/lime/lime_BNB_bargraph')
 plt.clf()
 
-# from wordcloud import WordCloud
+from wordcloud import WordCloud
 
 tweet_pos = tweet[tweet['Polarity'] == 1] # Only collect tweets that are positive
 tweet_neg = tweet[tweet['Polarity'] == 0] # Only collect tweets that are negative
 
-# if not os.path.isdir('outputs/wordcloud'):
-#     os.makedirs('outputs/wordcloud')
+if not os.path.isdir('outputs/wordcloud'):
+    os.makedirs('outputs/wordcloud')
 
-# plt.figure(figsize = (20,20))
-# wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_neg['Tweet']))
-# plt.imshow(wc , interpolation = 'bilinear')
-# plt.savefig("outputs/wordcloud/word_cloud_negative")
-#
-# plt.figure(figsize = (20,20))
-# wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_pos['Tweet']))
-# plt.imshow(wc , interpolation = 'bilinear')
-# plt.savefig("outputs/wordcloud/word_cloud_positive")
+plt.figure(figsize = (20,20))
+wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_neg['Tweet']))
+plt.imshow(wc , interpolation = 'bilinear')
+plt.savefig("outputs/wordcloud/word_cloud_negative")
+
+plt.figure(figsize = (20,20))
+wc = WordCloud(max_words = 2000 , width = 1600 , height = 800).generate(" ".join(tweet_pos['Tweet']))
+plt.imshow(wc , interpolation = 'bilinear')
+plt.savefig("outputs/wordcloud/word_cloud_positive")
 
 #img processing confidence
 img_path = 'img.jpg'
@@ -579,6 +579,10 @@ else:
     text_file.write("\nno threats found")
     text_file.close()
 
-
+multimomdalNum = (1-(c.predict_proba([ls_X_test[idx]]).round(3)[0, 1]) + average)/2
+if (multimomdalNum > 0.5):
+    print("Warning, threat was found from this social media post. Confidence: " + str(multimomdalNum))
+else:
+    print("This social media post is normal. Confidence: " + str(multimomdalNum))
 
 print("DONE!")
